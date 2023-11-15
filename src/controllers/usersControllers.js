@@ -91,7 +91,7 @@ const updatePerfilForUser = async (id) => {
   }
 };
 
-const login = async (email, password, isGoogleUser) => {
+const login = async (email, password) => {
   try {
     const user = await Users.findOne({ where: { email } });
 
@@ -103,8 +103,8 @@ const login = async (email, password, isGoogleUser) => {
       throw new Error("Comuníquese con el administrador, su cuenta ha sido restringida.");
     }
 
-    if (isGoogleUser) {
-      return { logged: true, userId: user.id, photo: user.photo };
+    if (user.isGoogleUser) {
+      return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName };
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
@@ -113,7 +113,7 @@ const login = async (email, password, isGoogleUser) => {
       throw new Error("Contraseña no válida");
     }
 
-    return { logged: true, userId: user.id, photo: user.photo };
+    return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName };
   } catch (error) {
     console.error(error);
     return { error: error.message };

@@ -3,12 +3,12 @@ const router = express.Router();
 const {
   getUsers,
   logout,
-  login,
   updatePerfilForUser,
   updatePerfilForAdmin,
   updatePerfilFullName,
   updatePerfilPhoto,
   createUser,
+  login,
 } = require("../controllers/usersControllers")
 
 const { transporter } = require("../controllers/sendMail");
@@ -109,6 +109,39 @@ router.put("/updateforuser/:id", async (req, res) => {
 });
 
 
+router.post("/login", async (req, res) => {
+try {
+const { email, password } = req.body;
+const user = await login(email, password);
+if(user.error){
+  return res.status(500).json({ error: user.error });
+}
+res.status(201).json(user)
+}
+catch (error) {
+  console.error(error);
+  return res.status(500).json({ error: 'Internal server error' });
+}
+})
 
+router.post("/logout/:id", async (req, res) => {
+try {
+const { id } = req.params;
+
+const user = await logout(id);
+
+if(user.error){
+  return res.status(500).json({ error: user.error });
+
+}
+res.status(201).json(user)
+
+}
+catch (error) {
+  console.error(error);
+  return res.status(500).json({ error: 'Internal server error' });
+}
+
+})
 
 module.exports = router;
