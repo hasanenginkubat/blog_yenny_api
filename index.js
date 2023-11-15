@@ -1,10 +1,10 @@
 const server = require("./src/app")
 const { conn } = require("./src/config/db")
 
-conn.sync({ force: true }.then(() => {
- server.listen(8081, () => {
-  console.log("%s listening at 8081")
-
-  })
-
-}))
+conn.sync({ force: true }).then(() => {
+  console.log("Database synced");
+  const PORT = 8081;
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+});
