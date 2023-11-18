@@ -29,16 +29,7 @@ let capsEntries = entries.map((entry) => [
 ]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Comments, Like, Media, Posts, Users } = sequelize.models;
 
-Posts.hasMany(Comments, { foreignKey: "postId" });
-Comments.belongsTo(Posts, { foreignKey: "postId" });
-Posts.hasMany(Like, { foreignKey: "postId" });
-Like.belongsTo(Posts, { foreignKey: "postId" });
-Posts.hasMany(Media, { foreignKey: "postId" });
-Media.belongsTo(Posts, { foreignKey: "postId" });
-Comments.belongsTo(Users, { foreignKey: "userId" });
-Like.belongsTo(Users, { foreignKey: "userId" });
 
 
 

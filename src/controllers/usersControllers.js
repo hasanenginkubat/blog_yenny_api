@@ -144,6 +144,64 @@ const getUsers = async () => {
   }
 };
 
+
+
+const softDeleteUser = async (userId) => {
+  try {
+    const user = await Users.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return { isBanner: false, error: "Usuario no encontrado" };
+    }
+    return { isBanner: true, userId: user.id };
+  } catch (error) {
+    console.error(error);
+    return { isBanner: false, error: error.message };
+  }
+};
+
+
+
+const cancelSoftDelete = async (userId) => {
+  try {
+    const user = await Users.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return { error: "Usuario no encontrado" };
+    }
+    return { isBanner: false, userId: user.id };
+  } catch (error) {
+    console.error(error);
+    return { error: error.message };
+  }
+};
+
+
+const fetchEmails = async () => {
+  try {
+    let users = await Users.findAll();
+    if (!users || users.length === 0) {
+      throw new Error("No users found");
+    }
+
+    let emails = users.map(user => user.email).filter(Boolean);
+
+    if (emails.length === 0) {
+      throw new Error("No valid email addresses found");
+    }
+
+    return emails;
+  } catch (error) {
+    console.error(error);
+    return { error: error.message };
+  }
+};
+
+
+
+
+
+
 module.exports = {
   getUsers,
   logout,
@@ -153,4 +211,7 @@ module.exports = {
   updatePerfilFullName,
   updatePerfilPhoto,
   createUser,
+  cancelSoftDelete,
+  softDeleteUser,
+  fetchEmails
 };

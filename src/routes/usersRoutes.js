@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {
+  cancelSoftDelete,
+  softDeleteUser,
   getUsers,
   logout,
   updatePerfilForUser,
@@ -109,6 +111,41 @@ router.put("/updateforuser/:id", async (req, res) => {
 });
 
 
+router.put("/deleteUser/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const ban = await softDeleteUser(id);
+
+    if (ban.error) {
+      return res.status(500).json({ error: ban.error });
+    }
+
+    res.status(201).json(ban);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.put("/cancelDeleteUser/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const ban = await cancelSoftDelete(id);
+
+    if (ban.error) {
+      return res.status(500).json({ error: ban.error });
+    }
+
+    res.status(201).json(ban);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 router.post("/login", async (req, res) => {
 try {
 const { email, password } = req.body;
@@ -135,6 +172,20 @@ if(user.error){
 
 }
 res.status(201).json(user)
+
+}
+catch (error) {
+  console.error(error);
+  return res.status(500).json({ error: 'Internal server error' });
+}
+
+})
+
+router.get("/", async (req, res) => {
+try {
+const allUsers = await getUsers();
+
+res.status(201).json(allUsers)
 
 }
 catch (error) {
