@@ -28,15 +28,15 @@ module.exports = (sequelize) => {
             type: DataTypes.ARRAY(DataTypes.STRING),
             allowNull: true,
           },
-          like: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-        },
-        totaLike: {
+        totalLike: {
           type: DataTypes.INTEGER,
           defaultValue: 0,
           allowNull: true,
       },
+      userIdLikes: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+    },
         comment: {
             type: DataTypes.TEXT,
             allowNull: true,

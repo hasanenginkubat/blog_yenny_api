@@ -30,7 +30,10 @@ let capsEntries = entries.map((entry) => [
 sequelize.models = Object.fromEntries(capsEntries);
 
 
+const { Posts, Users } = sequelize.models;
 
+Posts.belongsTo(Users, { foreignKey: 'userId' });
+Users.belongsTo(Posts, { foreignKey: 'userId' });
 
 
 module.exports = {
