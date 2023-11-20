@@ -23,7 +23,7 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
       photo: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
       },
       isBanner: {

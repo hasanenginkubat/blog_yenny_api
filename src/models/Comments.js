@@ -3,8 +3,7 @@ const { DataTypes } = require("sequelize")
 module.exports = (sequelize) => {
  
     sequelize.define(
-        "posts",
-
+        "comments",
         {
         id: {
         type: DataTypes.UUID,
@@ -15,29 +14,20 @@ module.exports = (sequelize) => {
         description: {
         type: DataTypes.TEXT,
         allowNull: true,
-        },    
+        },   
+        totalLike: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            allowNull: true,
+        },
+        userIdCommentsLike: {
+          type: DataTypes.ARRAY(DataTypes.STRING),
+          allowNull: true,
+      }, 
         date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
           },
-          video: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: true,
-          },
-          photo: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            allowNull: true,
-          },
-        totalLike: {
-          type: DataTypes.INTEGER,
-          defaultValue: 0,
-          allowNull: true,
-      },
-      userIdLikes: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
-        allowNull: true,
-    },
-
         },
         { timestamps: false }
 

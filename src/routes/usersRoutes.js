@@ -11,7 +11,10 @@ const {
   updatePerfilPhoto,
   createUser,
   login,
+  
 } = require("../controllers/usersControllers")
+const cloudinary = require("../utils/clodinary");
+const upload = require("../middleware/multer");
 
 const { transporter } = require("../controllers/sendMail");
 
@@ -37,10 +40,19 @@ router.post("/createuser", async (req, res) => {
 });
 
 
-router.put("/updatephoto/:id", async (req, res) => {
+router.put("/updatephoto/:id", upload.fields([{ name: 'photo', maxCount: 10 }, { name: 'video', maxCount: 2 }]), async (req, res) => {
   try {
     const { id } = req.params;
-    const { photo } = req.body;
+    let photoDataArray = [];
+    
+    if (req.files && req.files['photo']) {
+      for (const photoFile of req.files['photo']) {
+        const photoData = await cloudinary.uploader.upload(photoFile.path);
+        photoDataArray.push(photoData);
+      } 
+    }
+
+    let photo = photoDataArray.map(photoData => photoData.secure_url);
 
     const newPhoto = await updatePerfilPhoto(id, photo);
 

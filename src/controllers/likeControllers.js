@@ -1,4 +1,4 @@
-const { Posts, Users } = require("../config/db");
+const { Posts } = require("../config/db");
 
 const addLike = async (id, userId) => {
   try {

@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const { DB_USER, DB_PASSWORD, DB_HOST } = process.env;
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/blog`, {
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/comment`, {
   logging: false,
   native: false,
 });
@@ -30,10 +30,15 @@ let capsEntries = entries.map((entry) => [
 sequelize.models = Object.fromEntries(capsEntries);
 
 
-const { Posts, Users } = sequelize.models;
+const { Posts, Users, Comments } = sequelize.models;
 
 Posts.belongsTo(Users, { foreignKey: 'userId' });
 Users.belongsTo(Posts, { foreignKey: 'userId' });
+Comments.belongsTo(Users, { foreignKey: 'userId'});
+Users.belongsTo(Comments, { foreignKey: 'userId'});
+Posts.hasMany(Comments, { foreignKey: 'postId' });
+Comments.hasOne(Posts, { foreignKey: 'postId' });
+
 
 
 module.exports = {
