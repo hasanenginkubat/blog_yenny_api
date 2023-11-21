@@ -20,7 +20,7 @@ const addComments = async (postId, userId, description) => {
 
 const commentDelete = async (id) => {
     try {
-      const comment = await Posts.findOne({
+      const comment = await Comments.findOne({
         where: {
           id: id
         }
@@ -103,8 +103,34 @@ const commentDelete = async (id) => {
       throw new Error("Ocurrió un error");
     }
   };
-  
 
+  const getCommentsForPost = async (postId) => {
+    try {
+      const comments = await Comments.findAll({
+        where: { postId: postId },
+        include: [Posts]
+      });
+      return comments;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Ocurrió un error");
+    }
+  };
+
+
+  const getCommentsForComment = async (commentId) => {
+    try {
+      const comments = await Comments.findAll({
+        where: { id: commentId },
+        include: [Posts]
+      });
+      return comments;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Ocurrió un error");
+    }
+  };
+  
   
 
 
@@ -114,6 +140,8 @@ module.exports = {
   commentDelete,
   addCommentsForComment,
   removeLike,
-  addLike
+  addLike,
+  getCommentsForPost,
+  getCommentsForComment
 
 };
