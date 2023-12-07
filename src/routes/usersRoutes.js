@@ -11,6 +11,8 @@ const {
   updatePerfilPhoto,
   createUser,
   login,
+  createUserWithGoogle,
+  createUserWithFacebook
   
 } = require("../controllers/usersControllers")
 const cloudinary = require("../utils/clodinary");
@@ -18,9 +20,21 @@ const upload = require("../middleware/multer");
 
 const { transporter } = require("../controllers/sendMail");
 
-router.post("/createuser", async (req, res) => {
+router.post("/createuser",upload.fields([{ name: 'photo', maxCount: 10 }, { name: 'video', maxCount: 2 }]), async (req, res) => {
   try {
-    const { email, password, fullName, photo } = req.body;
+
+    let photoDataArray = [];
+    
+    if (req.files && req.files['photo']) {
+      for (const photoFile of req.files['photo']) {
+        const photoData = await cloudinary.uploader.upload(photoFile.path);
+        photoDataArray.push(photoData);
+      } 
+    }
+
+    let photo = photoDataArray.map(photoData => photoData.secure_url);
+
+    const { email, password, fullName } = req.body;
     const newUser = await createUser(email, password, fullName, photo);
 
     if (newUser.error) {
@@ -39,6 +53,47 @@ router.post("/createuser", async (req, res) => {
   }
 });
 
+router.post("/createuserGoogle", async (req, res) => {
+  try {
+    const { email, fullName, photoGoogle } = req.body;
+    const newUser = await createUserWithGoogle(email, fullName, photoGoogle);
+
+    if (newUser.error) {
+      return res.status(500).json({ error: newUser.error });
+    }
+
+    let subject = "NUEVA CUENTA";
+    let text = `Su cuenta ha sido creada sin problemas! ¡Felicidades!`;
+
+    await transporter(email, subject, text);
+
+    return res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post("/createuserFacebook", async (req, res) => {
+  try {
+    const { facebookId, fullName, photoGoogle } = req.body;
+    const newUser = await createUserWithFacebook(facebookId, fullName, photoGoogle);
+
+    if (newUser.error) {
+      return res.status(500).json({ error: newUser.error });
+    }
+
+    let subject = "NUEVA CUENTA";
+    let text = `Su cuenta ha sido creada sin problemas! ¡Felicidades!`;
+
+    await transporter(email, subject, text);
+
+    return res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.put("/updatephoto/:id", upload.fields([{ name: 'photo', maxCount: 10 }, { name: 'video', maxCount: 2 }]), async (req, res) => {
   try {

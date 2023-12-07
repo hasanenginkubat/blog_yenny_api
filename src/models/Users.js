@@ -26,6 +26,19 @@ module.exports = (sequelize) => {
         type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
       },
+      photoGoogle: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      isFacebookUser: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      facebookId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      
       isBanner: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

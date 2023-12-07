@@ -6,8 +6,8 @@ const createUser = async (email, password, fullName, photo) => {
   try {
     const existingUser = await Users.findOne({ where: { email } });
 
-    if(existingUser){
-    throw new Error("Ya existe ese mail")
+    if (existingUser) {
+      throw new Error("Esta dirección de correo electrónico ya está registrada.");
     }
 
     let hashedPassword = null;
@@ -17,21 +17,89 @@ const createUser = async (email, password, fullName, photo) => {
     }
 
     const name = fullName
-    .split(" ")
-    .map((name) => name[0].toUpperCase() + name.substring(1))
-    .join(" ");    
+      .split(" ")
+      .map((name) => name[0].toUpperCase() + name.substring(1))
+      .join(" ");
+
     const User = await Users.create({
       password: hashedPassword,
       fullName: name,
       photo: photo || image,
       email: email,
     });
+
+    return User;
+  } catch (error) {
+    let errorMessage = "Hubo un error, por favor intenta nuevamente más tarde.";
+
+    if (error.message.includes("Esta dirección de correo electrónico ya está registrada.")) {
+      errorMessage = "Esta dirección de correo electrónico ya está en uso.";
+    } else if (error.message.includes("validation error")) {
+      errorMessage = "Asegúrese de completar el formulario correctamente.";
+    }
+
+    return { error: errorMessage };
+  }
+};
+
+
+const createUserWithGoogle = async (email, fullName, photoGoogle) => {
+  try {
+    const existingUser = await Users.findOne({ where: { email } });
+
+    if (existingUser) {
+      throw new Error("Este correo electrónico ya está registrado.");
+    }
+
+    const User = await Users.create({
+      fullName: fullName,
+      photoGoogle: photoGoogle || image,
+      email: email,
+      isGoogleUser: true,
+    });
+
     return User;
   } catch (error) {
     console.error(error);
-    return { error: error.message };
+
+    let errorMessage = "Se produjo un error. Por favor, inténtelo de nuevo.";
+
+    if (error.message.includes("Este correo electrónico ya está registrado.")) {
+      errorMessage = "Este correo electrónico ya está en uso.";
+    }
+
+    return { error: errorMessage };
   }
 };
+
+const createUserWithFacebook = async (facebookId, fullName, photoGoogle) => {
+  try {
+    const existingUser = await Users.findOne({ where: { facebookId } });
+
+    if (existingUser) {
+      throw new Error("Ya existe ese account de Facebook");
+    }
+    const user = await Users.create({
+      fullName: fullName,
+      photoGoogle: photoGoogle || image,
+      facebookId: facebookId,
+      isFacebookUser: true,
+    });
+
+    return user;
+  } catch (error) {
+    console.error(error);
+
+    let errorMessage = "Se produjo un error. Por favor, inténtelo de nuevo.";
+
+    if (error.message.includes("Este correo electrónico ya está registrado.")) {
+      errorMessage = "Este correo electrónico ya está en uso.";
+    }
+
+    return { error: errorMessage };
+  }
+};
+
 
 const updatePerfilPhoto = async (id, photo) => {
   try {
@@ -116,23 +184,43 @@ const login = async (email, password) => {
     return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName };
   } catch (error) {
     console.error(error);
-    return { error: error.message };
+
+    let errorMessage = "Se produjo un error. Por favor, inténtelo de nuevo.";
+
+    if (error.message === "Usuario no encontrado") {
+      errorMessage = "Usuario no encontrado. Verifique su correo electrónico.";
+    } else if (error.message === "Comuníquese con el administrador, su cuenta ha sido restringida.") {
+      errorMessage = "Comuníquese con el administrador, su cuenta ha sido restringida.";
+    } else if (error.message === "Contraseña no válida") {
+      errorMessage = "Contraseña no válida. Verifique su contraseña e inténtelo de nuevo.";
+    }
+
+    return { error: errorMessage };
   }
 };
 
 const logout = async (userId) => {
   try {
     const user = await Users.findOne({ where: { id: userId } });
+
     if (user) {
       return { logged: false, userId: user.id };
     } else {
-      throw new Error("User not found");
+      throw new Error("Usuario no encontrado");
     }
   } catch (error) {
     console.error(error);
-    return { error: error.message };
+
+    let errorMessage = "Se produjo un error. Por favor, inténtelo de nuevo.";
+
+    if (error.message === "Usuario no encontrado") {
+      errorMessage = "Usuario no encontrado. Verifique su sesión e inténtelo de nuevo.";
+    }
+
+    return { error: errorMessage };
   }
 };
+
 
 const getUsers = async () => {
   try {
@@ -213,5 +301,7 @@ module.exports = {
   createUser,
   cancelSoftDelete,
   softDeleteUser,
-  fetchEmails
+  fetchEmails,
+  createUserWithGoogle,
+  createUserWithFacebook
 };
