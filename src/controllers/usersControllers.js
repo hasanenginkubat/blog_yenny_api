@@ -172,7 +172,7 @@ const login = async (email, password) => {
     }
 
     if (user.isGoogleUser) {
-      return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName };
+      return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName, photoGoogle: user.photoGoogle, isAdmin: user.isAdmin  };
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
@@ -181,7 +181,7 @@ const login = async (email, password) => {
       throw new Error("Contraseña no válida");
     }
 
-    return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName };
+    return { logged: true, userId: user.id, photo: user.photo, fullName: user.fullName, photoGoogle: user.photoGoogle, isAdmin: user.isAdmin };
   } catch (error) {
     console.error(error);
 
