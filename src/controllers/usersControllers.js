@@ -241,8 +241,9 @@ const softDeleteUser = async (userId) => {
     if (!user) {
       return { isBanner: false, error: "Usuario no encontrado" };
     }
-    return { isBanner: true, userId: user.id };
-  } catch (error) {
+    await Users.update({ isBanner: true }, { where: { id: userId } });
+    return { isBanner: true, userId: user.id };  } 
+    catch (error) {
     console.error(error);
     return { isBanner: false, error: error.message };
   }
@@ -257,7 +258,7 @@ const cancelSoftDelete = async (userId) => {
     if (!user) {
       return { error: "Usuario no encontrado" };
     }
-    return { isBanner: false, userId: user.id };
+    await Users.update({ isBanner: false }, { where: { id: userId } });
   } catch (error) {
     console.error(error);
     return { error: error.message };
