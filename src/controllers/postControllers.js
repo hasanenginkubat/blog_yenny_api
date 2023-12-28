@@ -71,7 +71,7 @@ const postDelete = async (id) => {
     
     if (post) {
       await post.destroy();
-      return { message: 'post eliminado' };
+      return id;
     } else {
       throw new Error("post no encontrado");
     }

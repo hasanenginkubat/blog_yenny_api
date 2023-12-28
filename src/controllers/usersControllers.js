@@ -187,11 +187,11 @@ const login = async (email, password) => {
 
     let errorMessage = "Se produjo un error. Por favor, inténtelo de nuevo.";
 
-    if (error.message === "Usuario no encontrado") {
+    if (error.message.includes("Usuario no encontrado")) {
       errorMessage = "Usuario no encontrado. Verifique su correo electrónico.";
-    } else if (error.message === "Comuníquese con el administrador, su cuenta ha sido restringida.") {
+    } else if (error.message.includes("Comuníquese con el administrador, su cuenta ha sido restringida.")) {
       errorMessage = "Comuníquese con el administrador, su cuenta ha sido restringida.";
-    } else if (error.message === "Contraseña no válida") {
+    } else if (error.message.includes("Contraseña no válida")) {
       errorMessage = "Contraseña no válida. Verifique su contraseña e inténtelo de nuevo.";
     }
 

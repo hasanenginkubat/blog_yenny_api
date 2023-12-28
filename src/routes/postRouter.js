@@ -5,9 +5,11 @@ const upload = require("../middleware/multer");
 const { createPost, updatePost, postDelete, getPosts } = require('../controllers/postControllers');
 const { transporter } = require("../controllers/sendMail")
 const { fetchEmails } = require("../controllers/usersControllers")
+const timeout = require('connect-timeout');
 
 
-router.post('/createPost', upload.fields([{ name: 'photo', maxCount: 10 }, { name: 'video', maxCount: 2 }]), async (req, res) => {
+
+router.post('/createPost', timeout('10m'), upload.fields([{ name: 'photo', maxCount: 10 }, { name: 'video', maxCount: 2 }]), async (req, res) => {
   try {
     let photoDataArray = [];
     
